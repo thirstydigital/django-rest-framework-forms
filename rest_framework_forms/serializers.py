@@ -10,7 +10,7 @@ class FormSerializerMixin(object):
     form_class = None
     form_field_mapping = {
         forms.FloatField: serializers.FloatField,
-        forms.IntegerField: iserializers.IntegerField,
+        forms.IntegerField: serializers.IntegerField,
         forms.DateTimeField: serializers.DateTimeField,
         forms.DateField: serializers.DateField,
         forms.TimeField: serializers.TimeField,
@@ -84,7 +84,7 @@ class FormSerializerMixin(object):
             kwargs.update({attribute: getattr(form_field, attribute)})
 
         field = self.form_field_mapping.get(
-            form_field.__class__, WritableField)(**kwargs)
+            form_field.__class__, serializers.WritableField)(**kwargs)
 
         return field
 
