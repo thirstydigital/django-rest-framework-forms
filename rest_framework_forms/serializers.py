@@ -42,7 +42,7 @@ class FormSerializerMixin(object):
         # Check ``fields`` on a form instance, instead of ``base_fields`` on a
         # form class, to ensure we have access to any fields that are added
         # or updated during initialisation.
-        for key, form_field in self.form_class().fields.iteritems():
+        for key, form_field in self.get_form().fields.iteritems():
             # TODO: Get multiple serializer fields for ``MultiValueField``
             #       and ``MultiValueWidget`` form fields and widgets.
             field = self.get_field(form_field)
@@ -86,19 +86,32 @@ class FormSerializerMixin(object):
         return self.form_field_mapping.get(
             form_field.__class__, WritableField)(**kwargs)
 
+    def get_bound_form(self, data, files, *args, **kwargs):
+        """
+        Returns a bound form.
+        """
+        kwargs.setdefault('instance', getattr(self, 'object', None))
+        return self.form_class(data, files, *args, **kwargs)
+
+    def get_form(self, *args, **kwargs):
+        """
+        Returns an unbound form.
+        """
+        kwargs.setdefault('instance', getattr(self, 'object', None))
+        return self.form_class(*args, **kwargs)
+
     def from_native(self, data, files):
         """
         Binds data and files to the form class.
         """
-        self.form = self.form_class(
-            data, files, instance=getattr(self, 'object', None))
+        self.bound_form = self.get_bound_form(data, files)
         return super(FormSerializerMixin, self).from_native(data, files)
 
     def perform_validation(self, attrs):
         """
         Runs form validation.
         """
-        for key, error_list in self.form.errors.iteritems():
+        for key, error_list in self.bound_form.errors.iteritems():
             self._errors.setdefault(key, []).extend(error_list)
         return super(FormSerializerMixin, self).perform_validation(attrs)
 
@@ -108,5 +121,4 @@ class FormSerializerMixin(object):
         or update and return a persistant object. For example, by calling
         ``form.save()`` to return a model object.
         """
-        return self.form.cleaned_data
-
+        return self.bound_form.cleaned_data
