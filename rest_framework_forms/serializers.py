@@ -119,8 +119,8 @@ class FormSerializerMixin(object):
 
     def restore_object(self, attrs, instance=None):
         """
-        Returns ``form.cleaned_data``. You should override this method to create
-        or update and return a persistant object. For example, by calling
-        ``form.save()`` to return a model object.
+        Returns ``cleaned_data`` from a bound form. You should override this
+        method to create or update and return a persistant object. For example,
+        by calling ``save()`` on a bound form to return a model object.
         """
         return self.bound_form.cleaned_data
