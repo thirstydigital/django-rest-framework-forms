@@ -83,8 +83,10 @@ class FormSerializerMixin(object):
         for attribute in attributes:
             kwargs.update({attribute: getattr(form_field, attribute)})
 
-        return self.form_field_mapping.get(
+        field = self.form_field_mapping.get(
             form_field.__class__, WritableField)(**kwargs)
+
+        return field
 
     def get_bound_form(self, data, files, *args, **kwargs):
         """
