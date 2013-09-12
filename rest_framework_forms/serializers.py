@@ -92,6 +92,7 @@ class FormSerializerMixin(object):
         """
         Returns a bound form.
         """
+        # TODO: Only pass ``instance`` when appropriate.
         kwargs.setdefault('instance', getattr(self, 'object', None))
         return self.form_class(data, files, *args, **kwargs)
 
