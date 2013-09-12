@@ -95,12 +95,11 @@ class FormSerializerMixin(object):
         kwargs.setdefault('instance', getattr(self, 'object', None))
         return self.form_class(data, files, *args, **kwargs)
 
-    def get_form(self, *args, **kwargs):
+    def get_form(self):
         """
         Returns an unbound form.
         """
-        kwargs.setdefault('instance', getattr(self, 'object', None))
-        return self.form_class(*args, **kwargs)
+        return self.form_class()
 
     def from_native(self, data, files):
         """
