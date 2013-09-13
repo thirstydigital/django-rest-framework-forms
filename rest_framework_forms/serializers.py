@@ -107,7 +107,7 @@ class FormSerializerMixin(object):
         Runs form validation.
         """
         for key, error_list in self.bound_form.errors.iteritems():
-            self._errors.setdefault(key, []).extend(error_list)
+            self._errors.setdefault(key, error_list)
         return super(FormSerializerMixin, self).perform_validation(attrs)
 
     def restore_object(self, attrs, instance=None):
