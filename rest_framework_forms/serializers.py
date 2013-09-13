@@ -39,12 +39,9 @@ class FormSerializerMixin(object):
         ret = super(FormSerializerMixin, self).get_default_fields()
 
         # Get a serializer field for each form field.
-        # Check ``fields`` on a form instance, instead of ``base_fields`` on a
-        # form class, to ensure we have access to any fields that are added
-        # or updated during initialisation.
         for key, form_field in self.get_form().fields.iteritems():
-            # TODO: Get multiple serializer fields for ``MultiValueField``
-            #       and ``MultiValueWidget`` form fields and widgets.
+            # TODO: Get multiple serializer fields for ``MultiValueField`` and
+            #       ``MultiValueWidget`` form fields and widgets.
             field = self.get_field(form_field)
             if field:
                 ret[key] = field
@@ -57,6 +54,7 @@ class FormSerializerMixin(object):
         """
         kwargs = {}
 
+        # map common form field attribtues to serializer field attributes.
         kwargs['required'] = form_field.required
         kwargs['read_only'] = form_field.widget.attrs.get('read_only', False)
         kwargs['default'] = form_field.initial
@@ -64,10 +62,12 @@ class FormSerializerMixin(object):
         kwargs['label'] = form_field.label
         kwargs['help_text'] = form_field.help_text
 
+        # shortcut for form fields with choices.
         if hasattr(form_field, 'choices'):
             kwargs['choices'] = form_field.choices
             return serializers.ChoiceField(**kwargs)
 
+        # map specific form field attributes to serializer field attributes.
         attribute_dict = {
             forms.CharField: ['max_length'],
             forms.DecimalField: ['max_digits', 'decimal_places'],
@@ -78,11 +78,11 @@ class FormSerializerMixin(object):
             forms.SlugField: ['max_length'],
             forms.URLField: ['max_length'],
         }
-
         attributes = attribute_dict.get(form_field.__class__, [])
         for attribute in attributes:
             kwargs.update({attribute: getattr(form_field, attribute)})
 
+        # create serializer field instance.
         field = self.form_field_mapping.get(
             form_field.__class__, serializers.WritableField)(**kwargs)
 
