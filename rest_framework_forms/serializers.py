@@ -94,12 +94,12 @@ class FormSerializerMixin(object):
 
         return field
 
-    def get_form(self, data=None, files=None, *args, **kwargs):
+    def get_form(self, *args, **kwargs):
         """
         Returns a form instance. You should override this if your form expects
         additional kwargs.
         """
-        return self.form_class(data, files, *args, **kwargs)
+        return self.form_class(*args, **kwargs)
 
     def from_native(self, data, files):
         """
