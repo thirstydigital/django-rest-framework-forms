@@ -1,4 +1,5 @@
 from django import forms
+from django.utils.datastructures import SortedDict
 from rest_framework import serializers
 
 class FormSerializerMixin(object):
@@ -34,9 +35,9 @@ class FormSerializerMixin(object):
 
     def get_default_fields(self):
         """
-        Returns all the fields that should be serialized.
+        Returns all the form fields that should be serialized.
         """
-        ret = super(FormSerializerMixin, self).get_default_fields()
+        ret = SortedDict()
 
         # Get a serializer field for each form field.
         for key, form_field in self.get_form().fields.iteritems():
@@ -45,6 +46,11 @@ class FormSerializerMixin(object):
             field = self.get_field(form_field)
             if field:
                 ret[key] = field
+
+        # Add fields from the super class.
+        fields = super(FormSerializerMixin, self).get_default_fields()
+        for key, field in fields.iteritems():
+            ret.setdefault(key, field)
 
         return ret
 
